@@ -35,3 +35,6 @@ button{
 .moves, .stars, .timer{
     margin-top: 10px;
 }
+#stop-button{
+    background-color: darkgreen;
+}
