@@ -38,7 +38,6 @@ function handleCardClick() {
 
 
       if (matchedPairs === 6) {
-        // Stop the timer
         clearInterval(timerInterval);
 
         
