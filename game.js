@@ -47,7 +47,7 @@ function handleCardClick() {
     // Check if the open cards match
     if (openCards[0].innerHTML === openCards[1].innerHTML) {
       // Cards match
-      openCards.forEach(card => card.classList.add('matched'));
+      openCards.forEach(card => card.classList.add("matched"));
       matchedPairs++;
 
       // Check if all pairs are matched
@@ -55,22 +55,19 @@ function handleCardClick() {
         // Stop the timer
         clearInterval(timerInterval);
 
-        // Display game completion message
-        setTimeout(() => {
-          alert(`Congratulations! You won the game in ${moves} moves and ${time} seconds.`);
-        }, 500);
+
       }
     } else {
       // Cards do not match
       setTimeout(() => {
-        openCards.forEach(card => card.classList.remove('open'));
+        openCards.forEach(card => card.classList.remove("open"));
         openCards = [];
       }, 1000);
     }
 
     // Enable clicking on other cards
     setTimeout(() => {
-      cards.forEach(card => card.addEventListener('click', handleCardClick));
+      cards.forEach(card => card.addEventListener("click", handleCardClick));
     }, 1000);
   }
 }
@@ -113,3 +110,12 @@ function startGame() {
 // Event listener for the start button
 const startButton = document.getElementById("start-button");
 startButton.addEventListener("click", startGame);
+
+
+
+(function shuffle() {
+  boxes.forEach(box => {
+    let randomPos = Math.floor(Math.random() * 12);
+    box.style.order = randomPos;
+  });
+})();
