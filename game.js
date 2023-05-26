@@ -1,81 +1,111 @@
-const cards = document.querySelectorAll('.card');
+function shuffle(array) {
+  let currentIndex = array.length;
+  let temporaryValue, randomIndex;
 
-let openCards = [];
-let moves = 0;
-let matchedPairs = 0;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
 
-let timerInterval;
-let time = 0;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
 
-let starRating = 3;
+  return array;
+}
 
-const movesElement = document.getElementById('move-step');
-const starRatingElement = document.getElementById('Starrating');
-const timerElement = document.getElementById('timer');
 
-function handleCardClick() {
-  if (this.classList.contains('matched') || this.classList.contains('open')) {
+function cardClick() {
+  if (this.classList.contains("matched") || this.classList.contains("selected")) {
     return;
   }
 
-  this.classList.add('open');
-  openCards.push(this);
+  this.classList.add("selected");
+  this.classList.remove("hidden");
 
-  if (openCards.length === 2) {
-    cards.forEach(card => card.removeEventListener('click', handleCardClick));
+  const selectedCards = document.querySelectorAll(".selected");
 
-    moves++;
-    movesElement.textContent = moves;
+  if (selectedCards.length === 2) {
+    const card1 = selectedCards[0];
+    const card2 = selectedCards[1];
 
-    if (openCards[0].innerHTML === openCards[1].innerHTML) {
-      openCards.forEach(card => card.classList.add("matched"));
-      matchedPairs++;
+    if (card1.dataset.card === card2.dataset.card) {
+      card1.classList.add("matched");
+      card2.classList.add("matched");
+      card1.classList.remove("selected");
+      card2.classList.remove("selected");
 
-      if (matchedPairs === cards.length / 2) {
-        clearInterval(timerInterval);
+      const allCards = document.querySelectorAll(".card");
+      const allMatched = [...allCards].every(card => card.classList.contains("matched"));
+      if (allMatched) {
+        stopTimer();
       }
     } else {
-      setTimeout(() => {
-        openCards.forEach(card => card.classList.remove("open"));
-        openCards = [];
+      setTimeout(function () {
+        card1.classList.add("hidden");
+        card2.classList.add("hidden");
+        card1.classList.remove("selected");
+        card2.classList.remove("selected");
       }, 1000);
     }
-
-    setTimeout(() => {
-      cards.forEach(card => card.addEventListener("click", handleCardClick));
-    }, 1000);
   }
 }
 
+
 function startGame() {
-  const shuffledCards = Array.from(cards);
-  shuffledCards.forEach(card => {
-    let randomPos = Math.floor(Math.random() * shuffledCards.length);
-    card.style.order = randomPos;
+  const cards = document.querySelectorAll(".card");
+  cards.forEach(function (card) {
+    card.classList.add("hidden");
+    card.classList.remove("matched", "selected");
+    card.addEventListener("click", cardClick);
   });
 
-  openCards = [];
-  moves = 0;
-  matchedPairs = 0;
-  starRating = 3;
-
-  movesElement.textContent = moves;
-  starRatingElement.textContent = "***";
-
-  clearInterval(timerInterval);
-  time = 0;
-  timerElement.textContent = time;
-
-  cards.forEach(card => {
-    card.addEventListener("click", handleCardClick);
-    card.classList.remove("open", "matched");
+  const shuffledCards = shuffle(Array.from(cards));
+  const tileGame = document.querySelector(".tile-game");
+  shuffledCards.forEach(function (card) {
+    tileGame.appendChild(card);
   });
 
-  timerInterval = setInterval(() => {
-    time++;
-    timerElement.textContent = time;
-  }, 1000);
+  startTimer();
+}
+
+function startTimer() {
+  let seconds = 0;
+  const timerElement = document.getElementById("timer");
+  let timer;
+
+  function updateTimer() {
+    seconds++;
+    timerElement.textContent = seconds;
+  }
+
+  function stopTimer() {
+    clearInterval(timer);
+  }
+
+  function resetTimer() {
+    seconds = 0;
+    timerElement.textContent = seconds;
+  }
+
+  timer = setInterval(updateTimer, 1000);
+
+  const stopButton = document.getElementById("stop-button");
+  stopButton.addEventListener("click", stopTimer);
+
+  const startButton = document.getElementById("start-button");
+  startButton.addEventListener("click", function () {
+    stopTimer();
+    resetTimer();
+    startGame();
+  });
 }
 
 const startButton = document.getElementById("start-button");
-startButton.addEventListener("click", startGame);
+startButton.addEventListener("click", function () {
+  startTimer();
+  startGame();
+});
+
+
+window.onload = startTimer;
