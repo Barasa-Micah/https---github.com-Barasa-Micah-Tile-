@@ -1,16 +1,11 @@
-
 const cards = document.querySelectorAll('.card');
 
-
 let openCards = [];
-let moves = 0
-
+let moves = 0;
 let matchedPairs = 0;
-
 
 let timerInterval;
 let time = 0;
-
 
 let starRating = 3;
 
@@ -24,29 +19,22 @@ function handleCardClick() {
   }
 
   this.classList.add('open');
-
   openCards.push(this);
 
-  
   if (openCards.length === 2) {
     cards.forEach(card => card.removeEventListener('click', handleCardClick));
 
-    
     moves++;
     movesElement.textContent = moves;
 
-    
     if (openCards[0].innerHTML === openCards[1].innerHTML) {
       openCards.forEach(card => card.classList.add("matched"));
       matchedPairs++;
 
-      if (matchedPairs === 6) {
+      if (matchedPairs === cards.length / 2) {
         clearInterval(timerInterval);
-
-
       }
     } else {
-      
       setTimeout(() => {
         openCards.forEach(card => card.classList.remove("open"));
         openCards = [];
@@ -59,26 +47,24 @@ function handleCardClick() {
   }
 }
 
-
 function startGame() {
-  const shuffledCards = Array.from(cards).sort(() => Math.random() - 0.5);
+  const shuffledCards = Array.from(cards);
+  shuffledCards.forEach(card => {
+    let randomPos = Math.floor(Math.random() * shuffledCards.length);
+    card.style.order = randomPos;
+  });
 
-  
   openCards = [];
   moves = 0;
   matchedPairs = 0;
   starRating = 3;
 
-  
   movesElement.textContent = moves;
-
-  
   starRatingElement.textContent = "***";
 
   clearInterval(timerInterval);
   time = 0;
   timerElement.textContent = time;
-
 
   cards.forEach(card => {
     card.addEventListener("click", handleCardClick);
@@ -93,15 +79,3 @@ function startGame() {
 
 const startButton = document.getElementById("start-button");
 startButton.addEventListener("click", startGame);
-
-
-
-(function shuffle() {
-  boxes.forEach(box => {
-    let randomPos = Math.floor(Math.random() * 12);
-    box.style.order = randomPos;
-  });
-})();
-
-
-
